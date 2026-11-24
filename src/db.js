@@ -32,29 +32,36 @@ export async function initDuckDB(onProgress) {
   if (onProgress) onProgress('Carregando base histórica de candidaturas (2014 a 2026)...');
 
   // Carrega o CSV tratado com a série histórica completa de 2014 a 2026 (gerais e municipais)
-  // Carrega preferencialmente o arquivo compactado em gzip (.csv.gz) para máxima performance de rede
+  // Carrega o arquivo compactado em gzip (.csv.gz) de alta performance
   let csvText;
-  try {
-    const response = await fetch('/data/candidaturas_historico_limpo.csv.gz');
-    if (response.ok) {
+  const response = await fetch('/data/candidaturas_historico_limpo.csv.gz');
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar candidaturas_historico_limpo.csv.gz: status ${response.status}`);
+  }
+
+  // Se o servidor enviou 'Content-Encoding: gzip', o navegador descompacta automaticamente
+  const contentEncoding = response.headers.get('content-encoding');
+  if (contentEncoding === 'gzip') {
+    csvText = await response.text();
+  } else {
+    // Se o servidor serviu os bytes brutos sem Content-Encoding, checa se são bytes gzip (0x1f, 0x8b)
+    const buffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
       if (typeof DecompressionStream !== 'undefined') {
         const ds = new DecompressionStream('gzip');
-        const decompressedStream = response.body.pipeThrough(ds);
+        const decompressedStream = new Response(buffer).body.pipeThrough(ds);
         csvText = await new Response(decompressedStream).text();
       } else {
-        const blob = await response.blob();
-        csvText = await blob.text();
+        throw new Error('Navegador não possui DecompressionStream nativo.');
       }
     } else {
-      throw new Error(`Status ${response.status}`);
+      csvText = new TextDecoder('utf-8').decode(buffer);
     }
-  } catch (err) {
-    console.warn('[DuckDB-Wasm] Arquivo .csv.gz indisponível, tentando fallback para .csv uncompressed...', err);
-    const fallbackResponse = await fetch('/data/candidaturas_historico_limpo.csv');
-    if (!fallbackResponse.ok) {
-      throw new Error(`Falha ao carregar base de dados: status ${fallbackResponse.status}`);
-    }
-    csvText = await fallbackResponse.text();
+  }
+
+  if (csvText.trim().startsWith('<')) {
+    throw new Error('O servidor retornou uma página HTML em vez do arquivo CSV.');
   }
 
   // Registra no sistema de arquivos virtual do DuckDB
@@ -81,7 +88,16 @@ export async function initDuckDB(onProgress) {
       ocupacao,
       TRY_CAST(idade AS INTEGER) AS idade,
       situacao
-    FROM read_csv('candidaturas.csv', header=true, auto_detect=true);
+    FROM read_csv(
+      'candidaturas.csv',
+      header=true,
+      delim=',',
+      quote='"',
+      escape='"',
+      null_padding=true,
+      ignore_errors=true,
+      auto_detect=true
+    );
   `);
 
   // Valida o carregamento dos dados no banco
