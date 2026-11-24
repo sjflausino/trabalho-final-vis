@@ -31,6 +31,7 @@ const HEADERS_OUT = [
 
 async function optimizeAllYears() {
   const dataDir = path.resolve('data');
+  const generalYears = [2014, 2018, 2022, 2026];
   const allYears = [2014, 2016, 2018, 2020, 2022, 2024, 2026];
 
   const outputFile = path.join(dataDir, 'candidaturas_historico_limpo.csv');
@@ -39,12 +40,16 @@ async function optimizeAllYears() {
   const out = fs.createWriteStream(outputFile, { encoding: 'utf8' });
   out.write(HEADERS_OUT.join(',') + '\n');
 
-  let totalGeneral = 0;
+  let totalExported = 0;
 
   for (const year of allYears) {
     const brasilFile = path.join(dataDir, `consulta_cand_${year}`, `consulta_cand_${year}_BRASIL.csv`);
-    if (!fs.existsSync(brasilFile)) continue;
+    if (!fs.existsSync(brasilFile)) {
+      console.log(`[Aviso] Arquivo não encontrado: ${brasilFile}`);
+      continue;
+    }
 
+    const isGeneral = generalYears.includes(year);
     const rl = readline.createInterface({
       input: fs.createReadStream(brasilFile, { encoding: 'latin1' }),
       crlfDelay: Infinity
@@ -53,6 +58,7 @@ async function optimizeAllYears() {
     let lineCount = 0;
     let colIndex = {};
     let exportedCount = 0;
+    let vereadorIndex = 0;
 
     for await (const line of rl) {
       lineCount++;
@@ -68,7 +74,7 @@ async function optimizeAllYears() {
       const anoInt = year;
       const uf = vals[colIndex['SG_UF']] || '';
       const regiao = UF_REGIOES[uf] || 'Outros';
-      const cargo = (vals[colIndex['DS_CARGO']] || '').replace(/"/g, '""');
+      const cargo = (vals[colIndex['DS_CARGO']] || '').replace(/"/g, '""').trim();
       const sq = vals[colIndex['SQ_CANDIDATO']] || '';
       const num = vals[colIndex['NR_CANDIDATO']] || '';
       const nomeUrna = (vals[colIndex['NM_URNA_CANDIDATO']] || vals[colIndex['NM_CANDIDATO']] || '').replace(/"/g, '""');
@@ -80,6 +86,19 @@ async function optimizeAllYears() {
       const raca = (vals[colIndex['DS_COR_RACA']] || '').trim().toUpperCase();
       const ocupacao = (vals[colIndex['DS_OCUPACAO']] || '').replace(/"/g, '""');
       const situacao = (vals[colIndex['DS_SITUACAO_CANDIDATURA']] || '').replace(/"/g, '""');
+
+      // Amostragem inteligente para anos municipais (2016, 2020, 2024):
+      // - Mantém 100% dos cargos executivos (PREFEITO e VICE-PREFEITO)
+      // - Amostra proporcional representativa de VEREADOR (1 a cada 15)
+      // Nas eleições gerais (2014, 2018, 2022, 2026): mantém 100% dos candidatos.
+      if (!isGeneral) {
+        if (cargo.toUpperCase() === 'VEREADOR') {
+          vereadorIndex++;
+          if (vereadorIndex % 15 !== 0) {
+            continue;
+          }
+        }
+      }
 
       let idade = '';
       if (dtNasc && dtNasc.length === 10) {
@@ -114,8 +133,8 @@ async function optimizeAllYears() {
       exportedCount++;
     }
 
-    console.log(`Ano ${year}: ${exportedCount.toLocaleString('pt-BR')} registros exportados.`);
-    totalGeneral += exportedCount;
+    console.log(`Ano ${year} (${isGeneral ? 'Gerais - 100%' : 'Municipais - Amostra Estratificada'}): ${exportedCount.toLocaleString('pt-BR')} registros exportados.`);
+    totalExported += exportedCount;
   }
 
   out.end();
@@ -124,8 +143,9 @@ async function optimizeAllYears() {
   fs.copyFileSync(outputFile, publicOutputFile);
 
   const stat = fs.statSync(publicOutputFile);
-  console.log(`\n🎉 Concluído! Total: ${totalGeneral.toLocaleString('pt-BR')} candidaturas.`);
-  console.log(`Tamanho final do CSV otimizado: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
+  console.log(`\n🎉 Processamento concluído com sucesso!`);
+  console.log(`Total de candidaturas consolidado: ${totalExported.toLocaleString('pt-BR')}`);
+  console.log(`Tamanho final do CSV em public/data/: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
 }
 
 optimizeAllYears().catch(console.error);
