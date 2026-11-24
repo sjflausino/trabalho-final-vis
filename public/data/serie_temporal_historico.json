@@ -1,0 +1,310 @@
+{
+  "2014": {
+    "ano": 2014,
+    "tipo": "Gerais",
+    "total": 26263,
+    "mulheres": 8137,
+    "homens": 18125,
+    "negros_indigenas": 11702,
+    "branca": 14440,
+    "outras_racas": 120,
+    "superior_completo": 11929,
+    "soma_idade": 1236441,
+    "count_idade": 26262,
+    "por_regiao": {
+      "Norte": {
+        "total": 4514,
+        "mulheres": 1394,
+        "negros_indigenas": 3033
+      },
+      "Nordeste": {
+        "total": 5801,
+        "mulheres": 1820,
+        "negros_indigenas": 3290
+      },
+      "Centro-Oeste": {
+        "total": 3355,
+        "mulheres": 1037,
+        "negros_indigenas": 1505
+      },
+      "Sudeste": {
+        "total": 9561,
+        "mulheres": 2939,
+        "negros_indigenas": 3500
+      },
+      "Sul": {
+        "total": 3004,
+        "mulheres": 939,
+        "negros_indigenas": 369
+      }
+    },
+    "perc_mulheres": 31,
+    "perc_negros_indigenas": 44.6,
+    "perc_superior": 45.4,
+    "idade_media": 47.1
+  },
+  "2016": {
+    "ano": 2016,
+    "tipo": "Municipais",
+    "total": 498391,
+    "mulheres": 158674,
+    "homens": 339608,
+    "negros_indigenas": 239457,
+    "branca": 256656,
+    "outras_racas": 2169,
+    "superior_completo": 105091,
+    "soma_idade": 22292234,
+    "count_idade": 498273,
+    "por_regiao": {
+      "Norte": {
+        "total": 48422,
+        "mulheres": 15489,
+        "negros_indigenas": 38171
+      },
+      "Nordeste": {
+        "total": 134135,
+        "mulheres": 42699,
+        "negros_indigenas": 93716
+      },
+      "Centro-Oeste": {
+        "total": 39176,
+        "mulheres": 12552,
+        "negros_indigenas": 21503
+      },
+      "Sudeste": {
+        "total": 198633,
+        "mulheres": 63168,
+        "negros_indigenas": 75562
+      },
+      "Sul": {
+        "total": 78025,
+        "mulheres": 24766,
+        "negros_indigenas": 10505
+      }
+    },
+    "perc_mulheres": 31.8,
+    "perc_negros_indigenas": 48,
+    "perc_superior": 21.1,
+    "idade_media": 44.7
+  },
+  "2018": {
+    "ano": 2018,
+    "tipo": "Gerais",
+    "total": 29287,
+    "mulheres": 9221,
+    "homens": 19958,
+    "negros_indigenas": 13702,
+    "branca": 15308,
+    "outras_racas": 169,
+    "superior_completo": 14255,
+    "soma_idade": 1391912,
+    "count_idade": 29178,
+    "por_regiao": {
+      "Norte": {
+        "total": 4737,
+        "mulheres": 1495,
+        "negros_indigenas": 3293
+      },
+      "Nordeste": {
+        "total": 6569,
+        "mulheres": 2096,
+        "negros_indigenas": 3840
+      },
+      "Centro-Oeste": {
+        "total": 3616,
+        "mulheres": 1126,
+        "negros_indigenas": 1762
+      },
+      "Sudeste": {
+        "total": 10913,
+        "mulheres": 3421,
+        "negros_indigenas": 4350
+      },
+      "Sul": {
+        "total": 3420,
+        "mulheres": 1075,
+        "negros_indigenas": 449
+      }
+    },
+    "perc_mulheres": 31.5,
+    "perc_negros_indigenas": 46.8,
+    "perc_superior": 48.7,
+    "idade_media": 47.7
+  },
+  "2020": {
+    "ano": 2020,
+    "tipo": "Municipais",
+    "total": 558804,
+    "mulheres": 187274,
+    "homens": 371246,
+    "negros_indigenas": 281589,
+    "branca": 268598,
+    "outras_racas": 1966,
+    "superior_completo": 136008,
+    "soma_idade": 25458301,
+    "count_idade": 558518,
+    "por_regiao": {
+      "Norte": {
+        "total": 56228,
+        "mulheres": 19077,
+        "negros_indigenas": 44441
+      },
+      "Nordeste": {
+        "total": 148379,
+        "mulheres": 49185,
+        "negros_indigenas": 105450
+      },
+      "Centro-Oeste": {
+        "total": 46584,
+        "mulheres": 15851,
+        "negros_indigenas": 26815
+      },
+      "Sudeste": {
+        "total": 215022,
+        "mulheres": 71736,
+        "negros_indigenas": 88813
+      },
+      "Sul": {
+        "total": 92591,
+        "mulheres": 31425,
+        "negros_indigenas": 16070
+      }
+    },
+    "perc_mulheres": 33.5,
+    "perc_negros_indigenas": 50.4,
+    "perc_superior": 24.3,
+    "idade_media": 45.6
+  },
+  "2022": {
+    "ano": 2022,
+    "tipo": "Gerais",
+    "total": 29322,
+    "mulheres": 9904,
+    "homens": 19389,
+    "negros_indigenas": 14918,
+    "branca": 14139,
+    "outras_racas": 116,
+    "superior_completo": 16016,
+    "soma_idade": 1424084,
+    "count_idade": 29293,
+    "por_regiao": {
+      "Norte": {
+        "total": 4590,
+        "mulheres": 1596,
+        "negros_indigenas": 3220
+      },
+      "Nordeste": {
+        "total": 7636,
+        "mulheres": 2607,
+        "negros_indigenas": 4965
+      },
+      "Centro-Oeste": {
+        "total": 3262,
+        "mulheres": 1139,
+        "negros_indigenas": 1627
+      },
+      "Sudeste": {
+        "total": 9788,
+        "mulheres": 3212,
+        "negros_indigenas": 4254
+      },
+      "Sul": {
+        "total": 4016,
+        "mulheres": 1341,
+        "negros_indigenas": 844
+      }
+    },
+    "perc_mulheres": 33.8,
+    "perc_negros_indigenas": 50.9,
+    "perc_superior": 54.6,
+    "idade_media": 48.6
+  },
+  "2024": {
+    "ano": 2024,
+    "tipo": "Municipais",
+    "total": 463935,
+    "mulheres": 159149,
+    "homens": 304740,
+    "negros_indigenas": 241974,
+    "branca": 217356,
+    "outras_racas": 1796,
+    "superior_completo": 131397,
+    "soma_idade": 21902861,
+    "count_idade": 463885,
+    "por_regiao": {
+      "Norte": {
+        "total": 43592,
+        "mulheres": 15220,
+        "negros_indigenas": 35311
+      },
+      "Nordeste": {
+        "total": 119733,
+        "mulheres": 41232,
+        "negros_indigenas": 86189
+      },
+      "Centro-Oeste": {
+        "total": 38471,
+        "mulheres": 13498,
+        "negros_indigenas": 23312
+      },
+      "Sudeste": {
+        "total": 179421,
+        "mulheres": 60781,
+        "negros_indigenas": 79976
+      },
+      "Sul": {
+        "total": 82718,
+        "mulheres": 28418,
+        "negros_indigenas": 17186
+      }
+    },
+    "perc_mulheres": 34.3,
+    "perc_negros_indigenas": 52.2,
+    "perc_superior": 28.3,
+    "idade_media": 47.2
+  },
+  "2026": {
+    "ano": 2026,
+    "tipo": "Gerais",
+    "total": 21017,
+    "mulheres": 7376,
+    "homens": 13638,
+    "negros_indigenas": 10353,
+    "branca": 10554,
+    "outras_racas": 107,
+    "superior_completo": 12343,
+    "soma_idade": 1039037,
+    "count_idade": 21014,
+    "por_regiao": {
+      "Norte": {
+        "total": 3157,
+        "mulheres": 1143,
+        "negros_indigenas": 2161
+      },
+      "Nordeste": {
+        "total": 5414,
+        "mulheres": 1929,
+        "negros_indigenas": 3353
+      },
+      "Centro-Oeste": {
+        "total": 2458,
+        "mulheres": 887,
+        "negros_indigenas": 1200
+      },
+      "Sudeste": {
+        "total": 7112,
+        "mulheres": 2415,
+        "negros_indigenas": 3054
+      },
+      "Sul": {
+        "total": 2844,
+        "mulheres": 994,
+        "negros_indigenas": 576
+      }
+    },
+    "perc_mulheres": 35.1,
+    "perc_negros_indigenas": 49.3,
+    "perc_superior": 58.7,
+    "idade_media": 49.4
+  }
+}

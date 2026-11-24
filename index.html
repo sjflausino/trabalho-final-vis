@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candidaturas 2026 — Sistema de Visual Analytics (D3.js + DuckDB-Wasm)</title>
+  
+  <!-- Tipografia Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Overlay de Carregamento e Inicialização do DuckDB-Wasm -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <h2>Inicializando Visual Analytics</h2>
+      <p id="loading-message">Carregando motor DuckDB-Wasm no navegador...</p>
+      <div class="loading-subtext">Processamento analítico 100% client-side com dados oficiais do TSE</div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho Principal -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="badge-tag">VISUAL ANALYTICS • D3.JS + DUCKDB-WASM</div>
+        <h1>Candidaturas Eleitorais 2026: Perfil, Diversidade e Representatividade</h1>
+        <p class="header-desc">
+          Sistema interativo de visual analytics para exploração multidimensional dos dados de candidaturas 
+          das Eleições Gerais Brasileiras de 2026 (Tribunal Superior Eleitoral - TSE).
+        </p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-show-sql" class="btn-secondary" title="Ver comandos SQL executados no DuckDB-Wasm">
+          <span class="icon">⚡</span> Inspecionar DuckDB SQL
+        </button>
+        <div id="pipeline-benchmark" class="benchmark-pill">
+          Iniciando DuckDB-Wasm...
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Filtros Globais e Busca -->
+  <nav class="filters-bar" aria-label="Filtros analíticos">
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="filter-ano">Ano Eleitoral:</label>
+        <select id="filter-ano" class="form-select">
+          <option value="">Todos os anos (Série Histórica)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-cargo">Cargo:</label>
+        <select id="filter-cargo" class="form-select">
+          <option value="">Todos os cargos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-regiao">Região:</label>
+        <select id="filter-regiao" class="form-select">
+          <option value="">Todas as regiões</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-partido">Partido:</label>
+        <select id="filter-partido" class="form-select">
+          <option value="">Todos os partidos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-genero">Gênero:</label>
+        <select id="filter-genero" class="form-select">
+          <option value="">Ambos os gêneros</option>
+          <option value="FEMININO">Feminino</option>
+          <option value="MASCULINO">Masculino</option>
+        </select>
+      </div>
+
+      <div class="filter-group filter-group-search">
+        <label for="filter-search">Busca por Nome / Ocupação:</label>
+        <input 
+          type="text" 
+          id="filter-search" 
+          class="form-input" 
+          placeholder="Ex: Médica, Advogado, Maria..." 
+        />
+      </div>
+
+      <div class="filter-actions">
+        <button id="btn-reset-filters" class="btn-reset" title="Restaurar visualização para todo o Brasil">
+          Limpar Filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de Filtros Ativos (Chips) -->
+    <div class="active-filters-container">
+      <span class="chips-label">Filtros ativos:</span>
+      <div id="active-filters-chips" class="chips-wrapper">
+        <span class="filter-chip chip-empty">Nenhum filtro aplicado (exibindo todo o Brasil)</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Painel de Conteúdo Principal -->
+  <main class="dashboard-main">
+    <!-- Seção 1: Indicadores Chave (KPIs) -->
+    <section class="section-kpis" aria-label="Indicadores gerais agregados">
+      <div id="kpis-container" class="kpis-grid">
+        <!-- Renderizado dinamicamente pelo D3 via src/charts/kpis.js -->
+      </div>
+    </section>
+
+    <!-- Seção 1.5: Série Temporal e Evolução Histórica (2014 a 2026) -->
+    <section class="chart-card card-timeseries" aria-labelledby="title-timeseries">
+      <div class="card-header">
+        <div>
+          <div class="badge-tag-sm">SÉRIE HISTÓRICA • LONGITUDINAL</div>
+          <h2 id="title-timeseries" class="card-title">📈 Evolução Histórica das Eleições (2014 a 2026)</h2>
+          <p class="card-subtitle">
+            Análise temporal de representatividade, diversidade e cumprimento de cotas. <strong>Clique em um ponto do ano</strong> para sincronizar e filtrar todo o painel.
+          </p>
+        </div>
+        <div class="timeseries-header-controls">
+          <div class="scope-toggle-group">
+            <button class="btn-toggle-scope active" data-scope="gerais" title="Exibe dados das Eleições Gerais (2014, 2018, 2022, 2026) com cross-filtering dinâmico">
+              Eleições Gerais
+            </button>
+            <button class="btn-toggle-scope" data-scope="todas" title="Exibe a série completa incluindo Eleições Municipais (2014 a 2026)">
+              Série Completa (+ Municipais)
+            </button>
+          </div>
+          <div class="radio-pill-group">
+            <label class="radio-pill">
+              <input type="radio" name="timeseries-metric" value="perc_mulheres" checked />
+              <span>% Mulheres</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="timeseries-metric" value="perc_negros_indigenas" />
+              <span>% Pretos/Pardos</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="timeseries-metric" value="idade_media" />
+              <span>Idade Média</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="timeseries-metric" value="total" />
+              <span>Total</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="chart-timeseries" class="chart-container timeseries-wrapper">
+        <!-- Renderizado via src/charts/timeSeries.js -->
+      </div>
+    </section>
+
+    <!-- Seção 2: Grid de Visualizações Coordenadas D3 -->
+    <div class="charts-grid">
+      <!-- Painel Esquerdo: Distribuição Geográfica (Mapa do Brasil) -->
+      <section class="chart-card card-map" aria-labelledby="title-map">
+        <div class="card-header">
+          <div>
+            <h2 id="title-map" class="card-title">Distribuição Geográfica e Demográfica por UF</h2>
+            <p class="card-subtitle">
+              Mapa coroplético interativo do Brasil. Clique em um estado para filtrar todas as visualizações.
+            </p>
+          </div>
+          <div class="map-controls">
+            <span class="control-label">Métrica:</span>
+            <div class="radio-pill-group">
+              <label class="radio-pill">
+                <input type="radio" name="map-metric" value="perc_mulheres" checked />
+                <span>% Mulheres</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="map-metric" value="perc_negros_indigenas" />
+                <span>% Pretos/Pardos</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="map-metric" value="total" />
+                <span>Total</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div id="chart-map" class="chart-container map-wrapper">
+          <!-- Renderizado via src/charts/map.js -->
+        </div>
+      </section>
+
+      <!-- Painel Direito Superior: Perfil Sociodemográfico -->
+      <section class="chart-card card-demographics" aria-labelledby="title-demographics">
+        <div class="card-header">
+          <div>
+            <h2 id="title-demographics" class="card-title">Perfil Sociodemográfico e Gênero</h2>
+            <p class="card-subtitle">
+              Distribuição por atributos declarados e proporção de gênero (<span class="legend-fem">■ Feminino</span> / <span class="legend-masc">■ Masculino</span>). Clique para filtrar.
+            </p>
+          </div>
+          <div class="demo-controls">
+            <button class="btn-toggle-demo active" data-dim="raca">Cor / Raça</button>
+            <button class="btn-toggle-demo" data-dim="instrucao">Escolaridade</button>
+            <button class="btn-toggle-demo" data-dim="estado_civil">Estado Civil</button>
+          </div>
+        </div>
+        <div id="chart-demographics" class="chart-container">
+          <!-- Renderizado via src/charts/demographics.js -->
+        </div>
+      </section>
+
+      <!-- Painel Direito Inferior: Partidos e Paridade de Gênero -->
+      <section class="chart-card card-parties" aria-labelledby="title-parties">
+        <div class="card-header">
+          <div>
+            <h2 id="title-parties" class="card-title">Agremiações Partidárias e Paridade Legal</h2>
+            <p class="card-subtitle">
+              Ranking dos maiores partidos com divisão de gênero. Ponto verde (<span style="color:#10b981;">●</span>) indica cumprimento da cota mínima de 30% de mulheres.
+            </p>
+          </div>
+        </div>
+        <div id="chart-parties" class="chart-container">
+          <!-- Renderizado via src/charts/parties.js -->
+        </div>
+      </section>
+
+      <!-- Painel Inferior Largo: Pirâmide Etária com Brush Interativo -->
+      <section class="chart-card card-age" aria-labelledby="title-age">
+        <div class="card-header">
+          <div>
+            <h2 id="title-age" class="card-title">Distribuição Etária das Candidaturas (Histograma com Brush)</h2>
+            <p class="card-subtitle">
+              Distribuição de idades em faixas de 5 anos. <strong>Arraste o mouse sobre o gráfico</strong> para filtrar qualquer intervalo etário (Cross-Filtering com <code>d3.brushX</code>).
+            </p>
+          </div>
+        </div>
+        <div id="chart-age" class="chart-container">
+          <!-- Renderizado via src/charts/ageHistogram.js -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Seção 3: Detalhamento Analítico sob Demanda (Details-on-Demand) -->
+    <section class="chart-card card-details" aria-labelledby="title-details">
+      <div class="card-header">
+        <div>
+          <h2 id="title-details" class="card-title">Detalhamento de Candidaturas sob Demanda (Details-on-Demand)</h2>
+          <p class="card-subtitle">
+            Visualização dos registros individuais consultados diretamente no DuckDB-Wasm com base nos filtros coordenados.
+          </p>
+        </div>
+      </div>
+      <div id="details-table-container" class="table-container">
+        <!-- Renderizado via src/charts/detailsTable.js -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Didático de Inspeção DuckDB SQL -->
+  <div id="sql-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-sql-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-sql-title">⚡ Consulta SQL em Execução no DuckDB-Wasm</h3>
+        <button id="btn-close-sql" class="modal-close-btn" aria-label="Fechar modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Este sistema executa consultas analíticas SQL em tempo real diretamente na memória WebAssembly 
+          do navegador, sem realizar chamadas a nenhum servidor remoto. Veja o comando gerado para o estado atual:
+        </p>
+        <pre><code id="sql-code-display" class="language-sql">-- Carregando...</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé com Metadados e Conceitos -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>Visual Analytics — Trabalho Final</h4>
+        <p>
+          Sistema fundamentado na taxonomia de tarefas e design de visualização de Tamara Munzner.
+          Implementado 100% no cliente com D3.js v7 e DuckDB-Wasm.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Fonte dos Dados</h4>
+        <p>
+          Dados abertos oficiais do Tribunal Superior Eleitoral (TSE) — Candidaturas Eleições Gerais 2026.
+          Base com 21.017 registros higienizados e padronizados.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Tecnologias</h4>
+        <p>D3.js v7 • DuckDB-Wasm • Vite • HTML5 / CSS3 Grid & Flexbox</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
