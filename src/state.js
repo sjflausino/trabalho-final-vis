@@ -18,7 +18,7 @@ const defaultState = {
   mapMetric: 'perc_mulheres', // 'perc_mulheres' | 'perc_negros_indigenas' | 'total'
   demographicsDim: 'raca', // 'raca' | 'instrucao' | 'estado_civil'
   timeSeriesMetric: 'perc_mulheres', // 'perc_mulheres' | 'perc_negros_indigenas' | 'idade_media' | 'total'
-  timeSeriesScope: 'gerais', // 'gerais' (2014, 2018, 2022, 2026) | 'todas' (2014 a 2026 com municipais)
+  timeSeriesScope: 'gerais', // 'gerais' (2014, 2018, 2022, 2026) | 'municipais' (2016, 2020, 2024) | 'todas' (2014 a 2026)
   page: 0,
   pageSize: 15
 };

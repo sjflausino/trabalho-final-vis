@@ -184,8 +184,11 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
   // Eixos
   const xAxis = d3.axisBottom(x)
     .tickFormat(d => {
-      const item = data.find(i => i.ano === d);
-      return item && item.tipo === 'Municipais' ? `${d} (Mun)` : `${d}`;
+      if (scope === 'todas') {
+        const item = data.find(i => i.ano === d);
+        return item && item.tipo === 'Municipais' ? `${d} (Mun)` : `${d}`;
+      }
+      return `${d}`;
     });
 
   const yAxis = d3.axisLeft(y)

@@ -93,7 +93,7 @@ O sistema opera **100% no cliente (client-side in-browser)**, executando consult
 2. **Evolução Histórica e Série Temporal (`src/charts/timeSeries.js`):**
    * Gráfico de linhas contínuas com interpolação suave (`d3.curveMonotoneX`) e área sombreada em gradiente.
    * Alternador dinâmico de métricas: `% Mulheres` (com linha pontilhada da cota legal de 30%), `% Pretos/Pardos/Indígenas`, `Idade Média` (formatada em anos) e `Total de Candidatos`.
-   * Alternador de escopo: *Eleições Gerais (2014, 2018, 2022, 2026)* vs. *Série Completa (+ Municipais de 2014 a 2026)*.
+   * Alternador de escopo: *Eleições Gerais (2014, 2018, 2022, 2026)*, *Eleições Municipais (2016, 2020, 2024)* e *Série Completa (2014 a 2026)*.
    * Tooltip com cálculo automático de variação ($\Delta$ em p.p.) em relação ao pleito anterior.
    * Interatividade de clique no ano para filtrar o restante da aplicação (*cross-filtering*).
 3. **Distribuição Geográfica e Demográfica por UF (`src/charts/map.js`):**

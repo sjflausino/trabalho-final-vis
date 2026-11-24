@@ -184,8 +184,18 @@ function setupEventListeners() {
       targetBtn.classList.add('active');
       const newScope = targetBtn.getAttribute('data-scope');
 
+      const currentAno = Number(store.getState().ano);
+
       // Se alternar para 'gerais' e o usuário estiver com ano municipal selecionado (2016, 2020, 2024), reseta o ano
-      if (newScope === 'gerais' && [2016, 2020, 2024].includes(Number(store.getState().ano))) {
+      if (newScope === 'gerais' && [2016, 2020, 2024].includes(currentAno)) {
+        store.setMultiple({
+          ano: null,
+          timeSeriesScope: newScope
+        });
+        const selectAno = document.getElementById('filter-ano');
+        if (selectAno) selectAno.value = '';
+      } else if (newScope === 'municipais' && [2014, 2018, 2022, 2026].includes(currentAno)) {
+        // Se alternar para 'municipais' e o usuário estiver com ano geral selecionado, reseta o ano
         store.setMultiple({
           ano: null,
           timeSeriesScope: newScope
@@ -256,9 +266,16 @@ function setupEventListeners() {
 }
 
 function generateInspectionSql(whereClause, scope = 'gerais') {
-  const tsScopeFilter = scope === 'gerais'
-    ? 'ano IN (2014, 2018, 2022, 2026)'
-    : '1=1 (todos os 7 pleitos)';
+  let tsScopeFilter = '1=1 (todos os 7 pleitos)';
+  let scopeLabel = 'Série Completa';
+
+  if (scope === 'gerais') {
+    tsScopeFilter = 'ano IN (2014, 2018, 2022, 2026)';
+    scopeLabel = 'Eleições Gerais';
+  } else if (scope === 'municipais') {
+    tsScopeFilter = 'ano IN (2016, 2020, 2024)';
+    scopeLabel = 'Eleições Municipais';
+  }
 
   return `-- Cláusula WHERE ativa no estado da aplicação:
 WHERE ${whereClause}
@@ -280,7 +297,7 @@ WHERE ${whereClause} AND uf != 'BR'
 GROUP BY uf, regiao
 ORDER BY total DESC;
 
--- 3. Série Temporal Dinâmica no DuckDB-Wasm (Escopo: ${scope === 'gerais' ? 'Eleições Gerais' : 'Série Completa'}):
+-- 3. Série Temporal Dinâmica no DuckDB-Wasm (Escopo: ${scopeLabel}):
 SELECT
   ano,
   CASE WHEN ano IN (2016, 2020, 2024) THEN 'Municipais' ELSE 'Gerais' END AS tipo,

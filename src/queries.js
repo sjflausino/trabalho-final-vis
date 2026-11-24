@@ -170,12 +170,20 @@ export async function fetchCandidatesList(whereClause = '1=1', page = 0, pageSiz
  * Agrupa os dados por ano eleitoral para avaliar tendências e cumprimento de cotas.
  * Suporta escopo:
  *  - 'gerais': Apenas anos de eleições gerais (2014, 2018, 2022, 2026)
+ *  - 'municipais': Apenas anos de eleições municipais (2016, 2020, 2024)
  *  - 'todas': Série completa com eleições gerais e municipais (2014 a 2026)
  */
 export async function fetchTimeSeriesData(whereClause = '1=1', scope = 'gerais') {
-  const scopeCondition = scope === 'gerais'
-    ? 'ano IN (2014, 2018, 2022, 2026)'
-    : '1=1';
+  let scopeCondition = '1=1';
+  let expectedYears = [2014, 2016, 2018, 2020, 2022, 2024, 2026];
+
+  if (scope === 'gerais') {
+    scopeCondition = 'ano IN (2014, 2018, 2022, 2026)';
+    expectedYears = [2014, 2018, 2022, 2026];
+  } else if (scope === 'municipais') {
+    scopeCondition = 'ano IN (2016, 2020, 2024)';
+    expectedYears = [2016, 2020, 2024];
+  }
 
   const fullWhere = (whereClause && whereClause !== '1=1')
     ? `(${whereClause}) AND ${scopeCondition}`
@@ -203,9 +211,7 @@ export async function fetchTimeSeriesData(whereClause = '1=1', scope = 'gerais')
   `;
   const result = await runQuery(sql);
 
-  const expectedYears = scope === 'gerais'
-    ? [2014, 2018, 2022, 2026]
-    : [2014, 2016, 2018, 2020, 2022, 2024, 2026];
+  // expectedYears já configurado de acordo com o escopo (gerais, municipais ou todas)
 
   const byYear = new Map();
   result.rows.forEach((r) => {
