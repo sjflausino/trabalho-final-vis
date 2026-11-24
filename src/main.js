@@ -226,6 +226,35 @@ function setupEventListeners() {
     });
   });
 
+  // Controle de Tema (Claro / Escuro)
+  const btnToggleTheme = document.getElementById('btn-toggle-theme');
+  const themeIcon = document.getElementById('theme-icon');
+  const themeLabel = document.getElementById('theme-label');
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      if (themeIcon) themeIcon.textContent = '☀️';
+      if (themeLabel) themeLabel.textContent = 'Tema Claro';
+    } else {
+      if (themeIcon) themeIcon.textContent = '🌙';
+      if (themeLabel) themeLabel.textContent = 'Tema Escuro';
+    }
+  }
+
+  const initialTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(initialTheme);
+
+  if (btnToggleTheme) {
+    btnToggleTheme.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      updateDashboard(['theme']);
+    });
+  }
+
   // Modal para exibir a consulta SQL DuckDB gerada
   const btnShowSql = document.getElementById('btn-show-sql');
   const sqlModal = document.getElementById('sql-modal');

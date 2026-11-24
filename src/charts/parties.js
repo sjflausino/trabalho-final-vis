@@ -12,7 +12,8 @@ export function renderParties(containerId, data) {
 
   const node = container.node();
   const totalWidth = node.getBoundingClientRect().width || 480;
-  const margin = { top: 25, right: 40, bottom: 35, left: 100 };
+  // Margem esquerda ampliada para garantir separação absoluta entre sigla, ponto de status e barra
+  const margin = { top: 25, right: 65, bottom: 35, left: 135 };
   const width = totalWidth - margin.left - margin.right;
   const barHeight = 24;
   const height = Math.max(260, data.length * (barHeight + 10));
@@ -52,21 +53,22 @@ export function renderParties(containerId, data) {
     .attr('class', 'axis axis-x')
     .attr('transform', `translate(0, ${height})`)
     .call(xAxis)
-    .call((g) => g.select('.domain').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick line').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '11px'));
+    .call((g) => g.select('.domain').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick line').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '11px'));
 
-  // Eixo Y (Partidos)
-  const yAxis = d3.axisLeft(y).tickSize(0);
+  // Eixo Y (Partidos) com padding de 24px para afastar os textos do ponto indicador
+  const yAxis = d3.axisLeft(y).tickSize(0).tickPadding(24);
   const yAxisG = g.append('g')
     .attr('class', 'axis axis-y')
     .call(yAxis)
     .call((g) => g.select('.domain').remove());
 
   yAxisG.selectAll('.tick text')
-    .attr('fill', '#e2e8f0')
+    .attr('fill', 'var(--text-main, #0f172a)')
     .attr('font-size', '11px')
-    .attr('font-weight', '600')
+    .attr('font-weight', '700')
+    .attr('text-anchor', 'end')
     .style('cursor', 'pointer');
 
   const selectedParty = store.getState().partido;
@@ -86,8 +88,8 @@ export function renderParties(containerId, data) {
     .attr('y', 0)
     .attr('width', totalWidth)
     .attr('height', y.bandwidth())
-    .attr('fill', (d) => (selectedParty === d.partido ? 'rgba(245, 158, 11, 0.15)' : 'transparent'))
-    .attr('rx', 3);
+    .attr('fill', (d) => (selectedParty === d.partido ? 'rgba(245, 158, 11, 0.2)' : 'transparent'))
+    .attr('rx', 4);
 
   // Barra de Homens
   barGroups.append('rect')
@@ -96,7 +98,7 @@ export function renderParties(containerId, data) {
     .attr('y', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', '#3b82f6')
+    .attr('fill', 'var(--male-color, #3b82f6)')
     .attr('width', 0)
     .transition()
     .duration(550)
@@ -109,28 +111,31 @@ export function renderParties(containerId, data) {
     .attr('y', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', '#ec4899')
+    .attr('fill', 'var(--female-color, #ec4899)')
     .attr('width', 0)
     .transition()
     .duration(550)
     .attr('width', (d) => x(d.mulheres || 0));
 
-  // Indicador se atingiu 30% de mulheres
+  // Indicador de Cota (posicionado a cx = -10, sem jamais tocar no texto do partido que termina em -24)
   barGroups.append('circle')
-    .attr('cx', -12)
+    .attr('cx', -10)
     .attr('cy', y.bandwidth() / 2)
-    .attr('r', 4)
-    .attr('fill', (d) => ((d.perc_mulheres || 0) >= 30 ? '#10b981' : '#ef4444'))
-    .attr('title', (d) => ((d.perc_mulheres || 0) >= 30 ? 'Cota ≥ 30% atingida' : 'Abaixo da cota de 30%'));
+    .attr('r', 4.5)
+    .attr('fill', (d) => ((d.perc_mulheres || 0) >= 30 ? 'var(--success, #10b981)' : 'var(--danger, #ef4444)'))
+    .attr('stroke', 'var(--bg-surface, #ffffff)')
+    .attr('stroke-width', 1.5)
+    .attr('title', (d) => ((d.perc_mulheres || 0) >= 30 ? 'Cota ≥ 30% atingida' : 'Abaixo da cota mínima legal (30%)'));
 
-  // Rótulo de texto com % feminino e total
+  // Rótulo de texto com total e % feminina no final da barra
   barGroups.append('text')
     .attr('x', (d) => x(d.total) + 6)
     .attr('y', y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .attr('fill', '#cbd5e1')
-    .attr('font-size', '10px')
-    .text((d) => `${d.total} (${(d.perc_mulheres || 0).toFixed(0)}% ♀)`);
+    .attr('fill', 'var(--text-main, #334155)')
+    .attr('font-size', '11px')
+    .attr('font-weight', '600')
+    .text((d) => `${d3.format(',d')(d.total)} (${(d.perc_mulheres || 0).toFixed(0)}% ♀)`);
 
   // Borda de seleção
   barGroups.append('rect')

@@ -90,11 +90,11 @@ export async function renderMap(containerId, ufsData, metric = 'perc_mulheres') 
     .attr('d', pathGenerator)
     .attr('fill', (f) => {
       const ufInfo = dataMap.get(f.properties.sigla);
-      if (!ufInfo) return '#334155'; // Estado sem dados no filtro
+      if (!ufInfo) return 'var(--bg-surface-elevated, #e2e8f0)'; // Estado sem dados no filtro
       const val = ufInfo[metric];
-      return val != null ? colorScale(val) : '#334155';
+      return val != null ? colorScale(val) : 'var(--bg-surface-elevated, #e2e8f0)';
     })
-    .attr('stroke', (f) => (selectedUf === f.properties.sigla ? '#f59e0b' : '#1e293b'))
+    .attr('stroke', (f) => (selectedUf === f.properties.sigla ? '#f59e0b' : 'var(--bg-surface, #ffffff)'))
     .attr('stroke-width', (f) => (selectedUf === f.properties.sigla ? 3 : 1))
     .style('cursor', 'pointer')
     .style('transition', 'fill 0.3s ease, stroke 0.2s ease, filter 0.2s ease');
@@ -199,29 +199,31 @@ function drawLegend(svg, width, height, colorScale, label, formatVal) {
     .attr('height', legendHeight)
     .attr('rx', 4)
     .style('fill', 'url(#map-legend-gradient)')
-    .style('stroke', '#334155')
-    .style('stroke-width', 0.5);
+    .style('stroke', 'var(--border-color, #cbd5e1)')
+    .style('stroke-width', 1);
 
   legendG.append('text')
     .attr('x', 0)
     .attr('y', -6)
-    .attr('fill', '#94a3b8')
+    .attr('fill', 'var(--text-muted, #475569)')
     .attr('font-size', '11px')
-    .attr('font-weight', '500')
+    .attr('font-weight', '600')
     .text(label);
 
   legendG.append('text')
     .attr('x', 0)
     .attr('y', legendHeight + 14)
-    .attr('fill', '#cbd5e1')
+    .attr('fill', 'var(--text-muted, #475569)')
     .attr('font-size', '10px')
+    .attr('font-weight', '500')
     .text(formatVal(domain[0]));
 
   legendG.append('text')
     .attr('x', legendWidth)
     .attr('y', legendHeight + 14)
     .attr('text-anchor', 'end')
-    .attr('fill', '#cbd5e1')
+    .attr('fill', 'var(--text-muted, #475569)')
     .attr('font-size', '10px')
+    .attr('font-weight', '500')
     .text(formatVal(domain[1]));
 }

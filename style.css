@@ -1,13 +1,46 @@
 /* ==========================================================================
    SISTEMA DE VISUAL ANALYTICS — CANDIDATURAS ELEITORAIS 2026
-   Tema: Modern Dark Professional / Observabilidade Analítica
+   Tema: Modern Light & Dark Visual Analytics
    ========================================================================== */
 
-:root {
+:root,
+:root[data-theme="light"] {
+  --bg-base: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f8fafc;
+  --bg-surface-subtle: #f1f5f9;
+  --bg-filter-bar: #ffffff;
+  
+  --border-color: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #2563eb;
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+  
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --female-color: #db2777;
+  --male-color: #2563eb;
+  --accent-gold: #d97706;
+  --success: #059669;
+  --danger: #dc2626;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] {
   --bg-base: #0b0f19;
   --bg-surface: #111827;
   --bg-surface-elevated: #1e293b;
   --bg-surface-subtle: #1e293b80;
+  --bg-filter-bar: #0d1322;
   
   --border-color: #334155;
   --border-subtle: #1e293b;
@@ -24,9 +57,6 @@
   --accent-gold: #f59e0b;
   --success: #10b981;
   --danger: #ef4444;
-
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
@@ -179,24 +209,24 @@ body {
 }
 
 .btn-secondary:hover {
-  background-color: #2a374d;
-  border-color: #475569;
+  background-color: var(--border-color);
+  color: var(--text-main);
 }
 
 .benchmark-pill {
   background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  color: var(--success);
   border: 1px solid rgba(16, 185, 129, 0.3);
   font-size: 0.8rem;
   font-family: var(--font-mono);
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.45rem 0.8rem;
   border-radius: 6px;
 }
 
 /* Barra de Filtros Globais */
 .filters-bar {
-  background-color: #0d1322;
+  background-color: var(--bg-filter-bar);
   border-bottom: 1px solid var(--border-color);
   padding: 0.9rem 2rem;
   position: sticky;
@@ -486,6 +516,67 @@ body {
   margin-top: 0.15rem;
 }
 
+/* Legenda Explícita do Gráfico de Agremiações */
+.parties-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.parties-legend-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.legend-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.legend-color-box {
+  width: 12px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.legend-color-box.male {
+  background-color: var(--male-color);
+}
+
+.legend-color-box.female {
+  background-color: var(--female-color);
+}
+
+.legend-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-status-dot.success {
+  background-color: var(--success);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.legend-status-dot.danger {
+  background-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+
 .legend-fem { color: var(--female-color); font-weight: 600; }
 .legend-masc { color: var(--male-color); font-weight: 600; }
 
@@ -575,7 +666,7 @@ body {
 /* Painel de Série Temporal */
 .card-timeseries {
   margin-bottom: 1.5rem;
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%), var(--bg-surface);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
 }
 
@@ -697,16 +788,16 @@ body {
 }
 
 .data-table tbody tr:hover {
-  background-color: rgba(30, 41, 59, 0.5);
+  background-color: var(--bg-surface-elevated);
 }
 
 .cell-ano {
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .cell-name {
-  color: #ffffff;
+  color: var(--text-main);
   font-weight: 600;
 }
 

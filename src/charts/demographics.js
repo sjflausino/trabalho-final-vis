@@ -53,9 +53,9 @@ export function renderDemographics(containerId, data, dimension = 'raca') {
     .attr('class', 'axis axis-x')
     .attr('transform', `translate(0, ${height})`)
     .call(xAxis)
-    .call((g) => g.select('.domain').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick line').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '11px'));
+    .call((g) => g.select('.domain').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick line').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '11px'));
 
   // Linhas de grade verticais
   g.append('g')
@@ -68,7 +68,7 @@ export function renderDemographics(containerId, data, dimension = 'raca') {
     .attr('x2', (d) => x(d))
     .attr('y1', 0)
     .attr('y2', height)
-    .attr('stroke', '#1e293b')
+    .attr('stroke', 'var(--border-subtle, #f1f5f9)')
     .attr('stroke-dasharray', '2,2');
 
   // Eixo Y (Categorias)
@@ -81,9 +81,9 @@ export function renderDemographics(containerId, data, dimension = 'raca') {
     .call((g) => g.select('.domain').remove());
 
   yAxisG.selectAll('.tick text')
-    .attr('fill', '#e2e8f0')
+    .attr('fill', 'var(--text-main, #0f172a)')
     .attr('font-size', '11px')
-    .attr('font-weight', '500')
+    .attr('font-weight', '600')
     .style('cursor', 'pointer');
 
   const selectedValue = store.getState()[dimension];
@@ -150,7 +150,7 @@ export function renderDemographics(containerId, data, dimension = 'raca') {
     .attr('x', (d) => x(d.total) + 6)
     .attr('y', y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .attr('fill', '#cbd5e1')
+    .attr('fill', 'var(--text-muted, #475569)')
     .attr('font-size', '10px')
     .attr('font-weight', '600')
     .text((d) => d3.format(',d')(d.total).replace(/,/g, '.'));

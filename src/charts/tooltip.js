@@ -15,13 +15,25 @@ export function getOrCreateTooltip() {
   return tooltipEl;
 }
 
-export function showTooltip(event, htmlContent) {
+export function showTooltip(arg1, arg2) {
   const tooltip = getOrCreateTooltip();
+  let event, htmlContent;
+
+  if (typeof arg1 === 'string') {
+    htmlContent = arg1;
+    event = arg2;
+  } else {
+    event = arg1;
+    htmlContent = arg2;
+  }
+
   tooltip
     .html(htmlContent)
     .style('opacity', 1);
 
-  moveTooltip(event);
+  if (event) {
+    moveTooltip(event);
+  }
 }
 
 export function moveTooltip(event) {

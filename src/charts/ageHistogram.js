@@ -55,9 +55,9 @@ export function renderAgeHistogram(containerId, data) {
     .attr('class', 'axis axis-x')
     .attr('transform', `translate(0, ${height})`)
     .call(xAxis)
-    .call((g) => g.select('.domain').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick line').attr('stroke', '#334155'))
-    .call((g) => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '10px'));
+    .call((g) => g.select('.domain').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick line').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call((g) => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '10px'));
 
   // Eixo Y
   const yAxis = d3.axisLeft(y)
@@ -68,7 +68,7 @@ export function renderAgeHistogram(containerId, data) {
     .attr('class', 'axis axis-y')
     .call(yAxis)
     .call((g) => g.select('.domain').remove())
-    .call((g) => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '10px'));
+    .call((g) => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '10px'));
 
   // Linhas de grade horizontais
   g.append('g')
@@ -81,7 +81,7 @@ export function renderAgeHistogram(containerId, data) {
     .attr('x2', width)
     .attr('y1', (d) => y(d))
     .attr('y2', (d) => y(d))
-    .attr('stroke', '#1e293b')
+    .attr('stroke', 'var(--border-subtle, #f1f5f9)')
     .attr('stroke-dasharray', '2,2');
 
   const binWidth = Math.max(8, (width / data.length) - 4);

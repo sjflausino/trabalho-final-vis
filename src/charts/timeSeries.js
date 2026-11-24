@@ -116,7 +116,7 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
         .tickSize(-width)
         .tickFormat('')
     )
-    .call(g => g.selectAll('.tick line').attr('stroke', '#1e293b').attr('stroke-dasharray', '2,2'))
+    .call(g => g.selectAll('.tick line').attr('stroke', 'var(--border-subtle, #f1f5f9)').attr('stroke-dasharray', '2,2'))
     .call(g => g.select('.domain').remove());
 
   // Linha de cota se aplicável
@@ -203,14 +203,14 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
     .attr('class', 'axis axis-x')
     .attr('transform', `translate(0, ${height})`)
     .call(xAxis)
-    .call(g => g.select('.domain').attr('stroke', '#334155'))
-    .call(g => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '0.78rem').attr('font-weight', '500'));
+    .call(g => g.select('.domain').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call(g => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '0.78rem').attr('font-weight', '500'));
 
   g.append('g')
     .attr('class', 'axis axis-y')
     .call(yAxis)
-    .call(g => g.select('.domain').attr('stroke', '#334155'))
-    .call(g => g.selectAll('.tick text').attr('fill', '#94a3b8').attr('font-size', '0.78rem'));
+    .call(g => g.select('.domain').attr('stroke', 'var(--border-color, #cbd5e1)'))
+    .call(g => g.selectAll('.tick text').attr('fill', 'var(--text-muted, #64748b)').attr('font-size', '0.78rem'));
 
   // Estado atual do filtro de ano
   const currentSelectedYear = store.getState().ano ? Number(store.getState().ano) : null;
@@ -227,7 +227,7 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
   // Halo de seleção se o ano estiver ativo
   points.append('circle')
     .attr('r', d => (currentSelectedYear === d.ano ? 11 : 7))
-    .attr('fill', d => (currentSelectedYear === d.ano ? config.color : '#0f172a'))
+    .attr('fill', d => (currentSelectedYear === d.ano ? config.color : 'var(--bg-surface, #ffffff)'))
     .attr('fill-opacity', d => (currentSelectedYear === d.ano ? 0.3 : 1))
     .attr('stroke', config.color)
     .attr('stroke-width', 2.5)
@@ -242,7 +242,7 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
   points.append('text')
     .attr('y', -11)
     .attr('text-anchor', 'middle')
-    .attr('fill', d => currentSelectedYear === d.ano ? '#ffffff' : '#cbd5e1')
+    .attr('fill', d => currentSelectedYear === d.ano ? config.color : 'var(--text-main, #0f172a)')
     .attr('font-size', '0.75rem')
     .attr('font-weight', d => currentSelectedYear === d.ano ? '700' : '600')
     .text(d => config.format(d[metric]));
