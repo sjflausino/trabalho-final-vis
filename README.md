@@ -1,5 +1,5 @@
-# Sistema de Visual Analytics: Candidaturas Eleitorais Brasileiras (2014 a 2026)
-## Painel Interativo de Exploração Demográfica, Diversidade, Série Temporal e Representatividade Política
+# Sistema de Visual Analytics: Candidaturas Eleitorais: Perfil, Diversidade e Representatividade
+## Painel Interativo de Exploração Demográfica, Diversidade, Série Temporal e Representatividade Política (2014 a 2026)
 
 Aplicação web completa de **Visual Analytics** desenvolvida com **D3.js puro (v7)** e **DuckDB-Wasm** para análise multidimensional e longitudinal de **1.627.019 candidaturas** registradas perante o Tribunal Superior Eleitoral (TSE) ao longo de sete ciclos eleitorais consecutivos (2014, 2016, 2018, 2020, 2022, 2024 e 2026), abrangendo tanto Eleições Gerais quanto Eleições Municipais.
 
