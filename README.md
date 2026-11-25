@@ -40,16 +40,17 @@ O sistema opera **100% no cliente (client-side in-browser)**, executando consult
 ## 📊 Dados Utilizados e Série Histórica
 
 * **Fonte Oficial:** Dados Abertos do Tribunal Superior Eleitoral (TSE) — *Divulgação de Candidaturas e Contas Eleitorais* (2014 a 2026).
-* **Volume Global:** **307.111 registros** higienizados e unificados para performance in-browser e clone instantâneo:
-  - **2014 (Geral):** 26.263 candidaturas (100% da base oficial)
-  - **2016 (Municipal):** 65.848 candidaturas (Prefeitos, Vice-Prefeitos e amostra estratificada)
-  - **2018 (Geral):** 29.287 candidaturas (100% da base oficial)
-  - **2020 (Municipal):** 74.687 candidaturas (Prefeitos, Vice-Prefeitos e amostra estratificada)
-  - **2022 (Geral):** 29.322 candidaturas (100% da base oficial)
-  - **2024 (Municipal):** 60.687 candidaturas (Prefeitos, Vice-Prefeitos e amostra estratificada)
-  - **2026 (Geral):** 21.017 candidaturas (100% da base oficial)
+* **Volume Global:** **1.627.019 registros** higienizados e unificados (100% da série histórica oficial do TSE):
+  - **2014 (Geral):** 26.263 candidaturas (100% oficial)
+  - **2016 (Municipal):** 498.391 candidaturas (100% oficial)
+  - **2018 (Geral):** 29.287 candidaturas (100% oficial)
+  - **2020 (Municipal):** 558.804 candidaturas (100% oficial)
+  - **2022 (Geral):** 29.322 candidaturas (100% oficial)
+  - **2024 (Municipal):** 463.935 candidaturas (100% oficial)
+  - **2026 (Geral):** 21.017 candidaturas (100% oficial)
 * **Arquivos Tratados (`public/data/`):**
-  - `candidaturas_historico_limpo.csv`: Base relacional consolidada e otimizada (45 MB) indexada diretamente no DuckDB-Wasm com as 15 variáveis essenciais.
+  - `candidaturas.parquet`: Base relacional consolidada completa em formato Apache Parquet colunar com compressão zstd (apenas **25,48 MB**), carregada instantaneamente pelo DuckDB-Wasm sem gargalos de rede ou amostragem.
+  - `candidaturas_historico_limpo.csv`: Versão em texto CSV para compatibilidade e fallback.
   - `serie_temporal_historico.json`: Sumário pré-calculado com agregados por ano, região, gênero e raça para suporte analítico rápido.
   - `brazil_states.geojson`: Malha vetorial simplificada das 27 Unidades Federativas do Brasil para projeção cartográfica instantânea.
 * **Atributos Analíticos Centrais:**

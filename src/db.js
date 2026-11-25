@@ -29,54 +29,81 @@ export async function initDuckDB(onProgress) {
 
   conn = await db.connect();
 
-  if (onProgress) onProgress('Carregando base histórica de candidaturas (2014 a 2026)...');
+  if (onProgress) onProgress('Carregando base histórica completa (1,6 milhão de candidaturas em Parquet)...');
 
-  // Carrega o CSV tratado com a série histórica de candidaturas (2014 a 2026)
-  const response = await fetch('/data/candidaturas_historico_limpo.csv');
-  if (!response.ok) {
-    throw new Error(`Falha ao carregar candidaturas_historico_limpo.csv: status ${response.status}`);
+  // Carrega a base histórica completa com 100% das candidaturas (1.627.019 registros)
+  // Utiliza formato Apache Parquet colunar de alta compressão (apenas 25 MB)
+  try {
+    const response = await fetch('/data/candidaturas.parquet');
+    if (!response.ok) {
+      throw new Error(`Falha ao carregar candidaturas.parquet: status ${response.status}`);
+    }
+    const buffer = await response.arrayBuffer();
+
+    // Registra o buffer binário no sistema de arquivos virtual do DuckDB-Wasm
+    await db.registerFileBuffer('candidaturas.parquet', new Uint8Array(buffer));
+
+    if (onProgress) onProgress('Indexando 1,6 milhão de registros em memória WebAssembly...');
+
+    // Criação da tabela otimizada lendo diretamente do Parquet colunar
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS candidaturas AS
+      SELECT 
+        TRY_CAST(ano AS INTEGER) AS ano,
+        sq_candidato,
+        nome_urna,
+        uf,
+        regiao,
+        cargo,
+        TRY_CAST(numero AS INTEGER) AS numero,
+        partido,
+        genero,
+        raca,
+        instrucao,
+        estado_civil,
+        ocupacao,
+        TRY_CAST(idade AS INTEGER) AS idade,
+        situacao
+      FROM read_parquet('candidaturas.parquet');
+    `);
+  } catch (parquetErr) {
+    console.warn('[DuckDB-Wasm] Parquet não disponível, tentando fallback para CSV...', parquetErr);
+    const response = await fetch('/data/candidaturas_historico_limpo.csv');
+    if (!response.ok) {
+      throw new Error(`Falha ao carregar base de dados: status ${response.status}`);
+    }
+    const csvText = await response.text();
+    await db.registerFileText('candidaturas.csv', csvText);
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS candidaturas AS
+      SELECT 
+        TRY_CAST(ano AS INTEGER) AS ano,
+        sq_candidato,
+        nome_urna,
+        uf,
+        regiao,
+        cargo,
+        TRY_CAST(numero AS INTEGER) AS numero,
+        partido,
+        genero,
+        raca,
+        instrucao,
+        estado_civil,
+        ocupacao,
+        TRY_CAST(idade AS INTEGER) AS idade,
+        situacao
+      FROM read_csv(
+        'candidaturas.csv',
+        header=true,
+        delim=',',
+        quote='"',
+        escape='"',
+        null_padding=true,
+        ignore_errors=true,
+        auto_detect=true
+      );
+    `);
   }
-  const csvText = await response.text();
-
-  if (csvText.trim().startsWith('<')) {
-    throw new Error('O servidor retornou uma página HTML em vez do arquivo CSV.');
-  }
-
-  // Registra no sistema de arquivos virtual do DuckDB
-  await db.registerFileText('candidaturas.csv', csvText);
-
-  if (onProgress) onProgress('Indexando 307 mil registros em memória WebAssembly...');
-
-  // Criação da tabela otimizada com a dimensão temporal 'ano'
-  await conn.query(`
-    CREATE TABLE IF NOT EXISTS candidaturas AS
-    SELECT 
-      TRY_CAST(ano AS INTEGER) AS ano,
-      sq_candidato,
-      nome_urna,
-      uf,
-      regiao,
-      cargo,
-      TRY_CAST(numero AS INTEGER) AS numero,
-      partido,
-      genero,
-      raca,
-      instrucao,
-      estado_civil,
-      ocupacao,
-      TRY_CAST(idade AS INTEGER) AS idade,
-      situacao
-    FROM read_csv(
-      'candidaturas.csv',
-      header=true,
-      delim=',',
-      quote='"',
-      escape='"',
-      null_padding=true,
-      ignore_errors=true,
-      auto_detect=true
-    );
-  `);
 
   // Valida o carregamento dos dados no banco
   const testCount = await conn.query('SELECT COUNT(*) AS total FROM candidaturas;');
