@@ -77,6 +77,12 @@ export async function renderMap(containerId, ufsData, metric = 'perc_mulheres') 
   const g = svg.append('g')
     .attr('transform', 'translate(20, 20)');
 
+  // Funções de estilo de contorno sensíveis ao tema atual (Claro ou Escuro)
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+  const getNormalStroke = () => (isDark() ? 'var(--bg-surface, #111827)' : 'var(--bg-surface, #ffffff)');
+  const getHoverStroke = (isSelected) => (isSelected ? 'var(--accent-gold, #f59e0b)' : (isDark() ? '#ffffff' : 'var(--primary, #2563eb)'));
+  const getSelectedStroke = () => 'var(--accent-gold, #f59e0b)';
+
   // Desenha os polígonos dos estados
   const paths = g.selectAll('path.state-feature')
     .data(geoDataCache.features)
@@ -94,21 +100,22 @@ export async function renderMap(containerId, ufsData, metric = 'perc_mulheres') 
       const val = ufInfo[metric];
       return val != null ? colorScale(val) : 'var(--bg-surface-elevated, #e2e8f0)';
     })
-    .attr('stroke', (f) => (selectedUf === f.properties.sigla ? '#f59e0b' : 'var(--bg-surface, #ffffff)'))
-    .attr('stroke-width', (f) => (selectedUf === f.properties.sigla ? 3 : 1))
+    .attr('stroke', (f) => (selectedUf === f.properties.sigla ? getSelectedStroke() : getNormalStroke()))
+    .attr('stroke-width', (f) => (selectedUf === f.properties.sigla ? 3 : 1.2))
     .style('cursor', 'pointer')
-    .style('transition', 'fill 0.3s ease, stroke 0.2s ease, filter 0.2s ease');
+    .style('transition', 'fill 0.25s ease, stroke 0.2s ease, stroke-width 0.2s ease');
 
   // Interatividade: Hover e Tooltip
   paths
     .on('mouseenter', function (event, f) {
       const sigla = f.properties.sigla;
+      const isSelected = selectedUf === sigla;
       const nome = f.properties.nome;
       const ufInfo = dataMap.get(sigla);
 
       d3.select(this)
-        .attr('stroke', '#ffffff')
-        .attr('stroke-width', selectedUf === sigla ? 3.5 : 2)
+        .attr('stroke', getHoverStroke(isSelected))
+        .attr('stroke-width', isSelected ? 3.5 : 2.5)
         .raise();
 
       let tooltipHtml = `
@@ -149,8 +156,8 @@ export async function renderMap(containerId, ufsData, metric = 'perc_mulheres') 
       const isSelected = selectedUf === sigla;
 
       d3.select(this)
-        .attr('stroke', isSelected ? '#f59e0b' : '#1e293b')
-        .attr('stroke-width', isSelected ? 3 : 1);
+        .attr('stroke', isSelected ? getSelectedStroke() : getNormalStroke())
+        .attr('stroke-width', isSelected ? 3 : 1.2);
 
       hideTooltip();
     })
