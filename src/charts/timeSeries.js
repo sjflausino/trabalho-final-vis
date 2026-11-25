@@ -271,8 +271,8 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
       }
 
       const content = `
-        <div class="tooltip-header" style="border-left: 3px solid ${config.color}; padding-left: 6px;">
-          <strong>Eleições ${d.ano} (${d.tipo || 'Gerais'})</strong>
+        <div class="tooltip-title" style="border-left: 3px solid ${config.color}; padding-left: 6px; margin-bottom: 4px;">
+          Eleições ${d.ano} (${d.tipo || 'Gerais'})
         </div>
         <div class="tooltip-row">
           <span>${config.label}:</span>
@@ -291,7 +291,7 @@ export function renderTimeSeries(containerId, data, metric = 'perc_mulheres', sc
           <strong>${d.perc_negros_indigenas?.toFixed(1) || 0}%</strong>
         </div>
         ${diffHtml}
-        <div class="tooltip-hint" style="margin-top: 6px; font-size: 0.72rem; color: #94a3b8;">
+        <div class="tooltip-hint" style="margin-top: 6px;">
           💡 Clique para ${currentSelectedYear === d.ano ? 'remover filtro' : `filtrar todo o painel em ${d.ano}`}
         </div>
       `;

@@ -166,11 +166,11 @@ export function renderParties(containerId, data) {
           <strong>${d3.format(',d')(d.total)}</strong>
         </div>
         <div class="tooltip-row">
-          <span style="color:#ec4899;">Mulheres (♀):</span>
+          <span style="color:var(--female-color, #db2777); font-weight:600;">Mulheres (♀):</span>
           <strong>${d.mulheres || 0} (${(d.perc_mulheres || 0).toFixed(1)}%)</strong>
         </div>
         <div class="tooltip-row">
-          <span style="color:#3b82f6;">Homens (♂):</span>
+          <span style="color:var(--male-color, #2563eb); font-weight:600;">Homens (♂):</span>
           <strong>${d.homens || 0} (${(100 - (d.perc_mulheres || 0)).toFixed(1)}%)</strong>
         </div>
         <div class="tooltip-hint">Clique para ${selectedParty === d.partido ? 'remover filtro' : 'filtrar por ' + d.partido}</div>

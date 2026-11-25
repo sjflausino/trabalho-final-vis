@@ -4,6 +4,16 @@ import { store } from '../state.js';
 
 let geoDataCache = null;
 
+const UF_NAMES = {
+  AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia',
+  CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás',
+  MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais',
+  PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí',
+  RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul',
+  RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo',
+  SE: 'Sergipe', TO: 'Tocantins'
+};
+
 /**
  * Renderiza o mapa coroplético do Brasil com D3.js puro
  * Suporta alternância dinâmica de métricas, realce interativo (hover)
@@ -110,7 +120,7 @@ export async function renderMap(containerId, ufsData, metric = 'perc_mulheres') 
     .on('mouseenter', function (event, f) {
       const sigla = f.properties.sigla;
       const isSelected = selectedUf === sigla;
-      const nome = f.properties.nome;
+      const nome = UF_NAMES[sigla] || f.properties.nome || sigla;
       const ufInfo = dataMap.get(sigla);
 
       d3.select(this)
